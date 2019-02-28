@@ -7,8 +7,7 @@ import java.io.*;
 // ask : r
 // tell : p=>q;q=>r;p;q;
 
-    class FC{
-        // create variables
+    class FC<main> {
         public static String tell;
         public static String ask;
         public static ArrayList<String> agenda;
@@ -31,44 +30,44 @@ import java.io.*;
             init(tell);
         }
 
-        // method which calls the main fcentails() method and returns output back to iengine
+        // metodo que chama o metodo principal fcentails() e retorna o output para o iengine
         public String execute(){
             String output = "";
             if (fcentails()){
-                // the method returned true so it entails
-                output = "YES: ";
-                // for each entailed symbol
+                // se for retornado true eh colocado na cauda
+                output = "SIM: ";
+                // para cada simbolo na cauda
                 for (int i=0;i<entailed.size();i++){
                     output += entailed.get(i)+", ";
                 }
                 output += ask;
             }
             else{
-                output = "NO";
+                output = "NÃO";
             }
             return output;
         }
 
-        // FC algorithm
+        // Algoritmo de encadeamento para frente
         public boolean fcentails(){
-        // loop through while there are unprocessed facts
+        // Em loop enquanto tem fatos nao processados
             while(!agenda.isEmpty()){
-                // take the first item and process it
+                // pega o primeiro item e processa
                 String p = agenda.remove(0);
-                // add to entailed
+                // adiciona para a cauda
                 entailed.add(p);
-                // for each of the clauses....
+                // Para cada clausula...
                 for (int i=0;i<clauses.size();i++){
-                    // .... that contain p in its premise
+                    // ... que contem p na sua premisa
                     if (premiseContains(clauses.get(i),p)){
                         Integer j = count.get(i);
-                        // reduce count : unknown elements in each premise
+                        // reduza o count : elementos desconhecido em cada premissa
                         count.set(i,--j);
-                        // all the elements in the premise are now known
+                        // todos os elementos da premissa agora sao conhecidos
                         if (count.get(i)==0){
-                            // the conclusion has been proven so put into agenda
+                            // a conclusao foi provada e colocada em agenda
                             String head = clauses.get(i).split("=>")[1];
-                            // have we just proven the 'ask'?
+                            // verifica se a inferencia foi provada
                             if (head.equals(ask))
                                 return true;
                             agenda.add(head);
@@ -76,24 +75,24 @@ import java.io.*;
                     }
                 }
             }
-            // if we arrive here then ask cannot be entailed
+            // nao pode ser provada
             return false;
         }
 
 
 
 
-        // method which sets up initial values for forward chaining
-// takes in string representing KB and seperates symbols and clauses, calculates count etc..
+        // metodo atribui os valores iniciais para o encadeamento para frente
+        // recebe em String as regras e separa simbolos e clausulas
         public static void init(String tell){
             String[] sentences = tell.split(";");
             for (int i=0;i<sentences.length;i++){
 
                 if (!sentences[i].contains("=>"))
-                    // add facts to be processed
+                    // adiciona fatos
                     agenda.add(sentences[i]);
                 else{
-                    // add sentences
+                    // adiciona sentencas
                     clauses.add(sentences[i]);
                     count.add(sentences[i].split("&").length);
                 }
@@ -101,17 +100,35 @@ import java.io.*;
         }
 
 
-        // method which checks if p appears in the premise of a given clause
-// input : clause, p
-// output : true if p is in the premise of clause
+        // metodo que checa se p aparece na premissa da clausula
+        // input : clausula, p
+        // output : true se p esta na premisa da clausula
         public static boolean premiseContains(String clause, String p){
             String premise = clause.split("=>")[0];
             String[] conjuncts = premise.split("&");
-            // check if p is in the premise
+            // checa se p esta na premisa
             if (conjuncts.length==1)
                 return premise.equals(p);
             else
                 return Arrays.asList(conjuncts).contains(p);
         }
+
+        public static void main(String args[]) {
+            String pq = "p=>q;q=>r;p;q;";
+            String test = "p&q=>r;p;q;";
+            String h  = "C=>M;" +
+                        "A&D=>E" +
+                        "L=>H;"  +
+                        "B&C=>G;" +
+                        "A&B=>C;" +
+                        "G&D=>H&I;" +
+                        "C=>D;" +
+                        "E&K=>H;" +
+                        "A;B;";
+
+            FC fc = new FC("r", test);
+
+            System.out.println(fc.execute());
+
+        }
     }
-}

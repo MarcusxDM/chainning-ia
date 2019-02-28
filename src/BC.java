@@ -28,79 +28,77 @@ class BC{
     }
 
 
-    // method which sets up initial values for backward chaining
+    // metodo inicializa os valores para o encadeamento para tras
     public static void init(String tell){
         agenda.add(ask);
-        // split kb into sentences
+        // divide o conjunto de regras em sentencas
         String[] sentences = tell.split(";");
         for (int i=0;i<sentences.length;i++){
             if (!sentences[i].contains("=>"))
-                // add the facts
+                // adiciona os fatos
                 facts.add(sentences[i]);
             else{
-                // add the premises
+                // adiciona as premissas
                 clauses.add(sentences[i]);
             }
         }
     }
 
-    // method which calls the main bcentails() method and returns output back to iengine
+    // metodo que chama o metodo principal bcentails() e retorna o output para o iengine
     public String execute(){
         String output = "";
 
         if (bcentails()){
-            // the method returned true so it entails
-            output = "YES: ";
-            // loop through all entailed symbols in reverse
+            // se for retornado true eh colocado na cauda
+            output = "SIM: ";
+            // para cada simbolo na cauda em reverso
             for (int i=entailed.size()-1;i>=0;i--){
                 if (i==0)
                     output += entailed.get(i);
                 else
-                    // no comma at the end
+                    // sem ponto e virgula no final
                     output += entailed.get(i)+", ";
 
             }
         }
-        // no
         else{
-            output = "NO";
+            output = "NÃO";
         }
         return output;
     }
 
-    // method which runs the bc algorithm
+    //  Algoritmo de encadeamento para tras
     public boolean bcentails(){
-        // while the list of symbols are not empty
+        // enquanto a lista de simbolos nao esta vazia
         while(!agenda.isEmpty()){
-            // get current symbol
+            // pega simbolo atual
             String q = agenda.remove(agenda.size()-1);
-            // add the entailed array
+            // adiciona para a cauda
             entailed.add(q);
 
-            // if this element is a fact then we dont need to go further
+            // checa se o elemento eh um fato
             if (!facts.contains(q)){
-                // .. but it isnt so..
-                // create array to hold new symbols to be processed
+                // cria array para guardar novos simbolos a serem processados
                 ArrayList<String> p = new ArrayList<String>();
                 for(int i=0;i<clauses.size();i++){
-                    // for each clause..
+                    // por cada clausula
                     if (conclusionContains(clauses.get(i),q)){
-                        // that contains the symbol as its conclusion
+                        // que contem o simbolo como sendo sua conclusao
 
                         ArrayList<String> temp = getPremises(clauses.get(i));
                         for(int j=0;j<temp.size();j++){
-                            // add the symbols to a temp array
+                            // adiciona simbolos a um array temporario
                             p.add(temp.get(j));
                         }
                     }
                 }
-                // no symbols were generated and since it isnt a fact either
-                // then this sybmol and eventually ASK  cannot be implied by TELL
+                // nenhum simbolo foi gerado e como não é um fato
+                // entao esse simbolo e eventualmente o objetivo nao eh indução do conjunto de regras
                 if (p.size()==0){
                     return false;
                 }
                 else{
-                    // there are symbols so check for previously processed ones and add to agenda
+                    // se tiver simbolos restantes, adicione para a agenda
                     for(int i=0;i<p.size();i++){
                         if (!entailed.contains(p.get(i)))
                             agenda.add(p.get(i));
@@ -110,17 +108,17 @@ class BC{
                 }
             }
 
-        }//while end
+        }
         return true;
     }
 
-    // methid that returns the conjuncts contained in a clause
+    // metodo que retorna os conjuntos contidos numa clausula
     public static ArrayList<String> getPremises(String clause){
-        // get the premise
+        // pega a premissa
         String premise = clause.split("=>")[0];
         ArrayList<String> temp = new ArrayList<String>();
         String[] conjuncts = premise.split("&");
-        // for each conjunct
+        // para cada conjunto:
         for(int i=0;i<conjuncts.length;i++){
             if (!agenda.contains(conjuncts[i]))
                 temp.add(conjuncts[i]);
@@ -129,9 +127,9 @@ class BC{
     }
 
 
-    // method which checks if c appears in the conclusion of a given clause
-// input : clause, c
-// output : true if c is in the conclusion of clause
+    // metodo checa se c aparece na conclusao da clausula
+    // input : clausula, c
+    // output : true se c esta na conclusao da clausula
     public static boolean conclusionContains(String clause, String c){
         String conclusion = clause.split("=>")[1];
         if (conclusion.equals(c))
