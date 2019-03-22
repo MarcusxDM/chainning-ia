@@ -58,7 +58,7 @@ import java.io.*;
                 entailed.add(p);
                 // Para cada clausula...
                 for (int i=0;i<clauses.size();i++){
-                    // ... que contem p na sua premisa
+                    // ... que contem p na sua premissa
                     if (premiseContains(clauses.get(i),p)){
                         Integer j = count.get(i);
                         // reduza o count : elementos desconhecido em cada premissa
